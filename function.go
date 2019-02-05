@@ -39,7 +39,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	if action == "get" {
 		handleGet(collection, w)
 	} else if action == "set" {
-		handleSet()
+		handleSet(collection, config, id, w, r)
 	} else {
 		io.WriteError(w, http.StatusBadRequest, "Bad request: action must be get or set.")
 		return

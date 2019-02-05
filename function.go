@@ -2,6 +2,7 @@ package F
 
 import (
 	"encoding/json"
+	"github.com/plancks-cloud/function-pc/domain"
 	"github.com/plancks-cloud/function-pc/io"
 	"github.com/sirupsen/logrus"
 	iog "io"
@@ -52,16 +53,16 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGet(collection string, w http.ResponseWriter) {
-	if collection == io.RouteCollectionName {
-		sl, err := io.ListAllRoutes(config)
+	if collection == domain.RouteCollectionName {
+		sl, err := domain.ListAllRoutes(config)
 		if err != nil {
 			io.WriteError(w, http.StatusInternalServerError, "Could not list all routes")
 			return
 		}
 		io.WriteObjectToJson(w, sl)
 		return
-	} else if collection == io.ServiceCollectionName {
-		sl, err := io.ListAllServices(config)
+	} else if collection == domain.ServiceCollectionName {
+		sl, err := domain.ListAllServices(config)
 		if err != nil {
 			io.WriteError(w, http.StatusInternalServerError, "Could not list all services")
 			return
@@ -74,8 +75,8 @@ func handleGet(collection string, w http.ResponseWriter) {
 }
 
 func handleSet(req *requestDescription, config *io.Configuration, w http.ResponseWriter) {
-	if req.collection == io.RouteCollectionName {
-		var routes []io.Route
+	if req.collection == domain.RouteCollectionName {
+		var routes []domain.Route
 		decoder := json.NewDecoder(req.body)
 		err := decoder.Decode(&routes)
 		if err != nil {
@@ -83,15 +84,15 @@ func handleSet(req *requestDescription, config *io.Configuration, w http.Respons
 			io.WriteError(w, http.StatusInternalServerError, "Could not decode routes")
 			return
 		}
-		err = io.StoreRoutes(config, req.id, routes)
+		err = domain.StoreRoutes(config, req.id, routes)
 		if err != nil {
 			logrus.Error(err)
 			io.WriteError(w, http.StatusInternalServerError, "Could not store routes")
 			return
 		}
 		io.WriteObjectToJson(w, "")
-	} else if req.collection == io.ServiceCollectionName {
-		var sl []io.Service
+	} else if req.collection == domain.ServiceCollectionName {
+		var sl []domain.Service
 		decoder := json.NewDecoder(req.body)
 		err := decoder.Decode(&sl)
 		if err != nil {
@@ -99,7 +100,7 @@ func handleSet(req *requestDescription, config *io.Configuration, w http.Respons
 			io.WriteError(w, http.StatusInternalServerError, "Could not decode services")
 			return
 		}
-		err = io.StoreServices(config, req.id, sl)
+		err = domain.StoreServices(config, req.id, sl)
 		if err != nil {
 			logrus.Error(err)
 			io.WriteError(w, http.StatusInternalServerError, "Could not store services")

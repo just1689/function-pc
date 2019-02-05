@@ -1,9 +1,10 @@
-package io
+package domain
 
 import (
 	"cloud.google.com/go/datastore"
 	"context"
 	"fmt"
+	"github.com/plancks-cloud/function-pc/io"
 	"github.com/plancks-cloud/plancks-cloud/model"
 	"github.com/sirupsen/logrus"
 )
@@ -12,7 +13,7 @@ const ServiceCollectionName = model.ServiceCollectionName
 
 type Service model.Service
 
-func ListAllServices(db *Configuration) (sl []Service, err error) {
+func ListAllServices(db *io.Configuration) (sl []Service, err error) {
 	ctx := context.Background()
 	sl = make([]Service, 0)
 	q := datastore.NewQuery(ServiceCollectionName)
@@ -22,8 +23,8 @@ func ListAllServices(db *Configuration) (sl []Service, err error) {
 	}
 	return sl, nil
 }
-func StoreServices(db *Configuration, id string, sl []Service) (err error) {
-	key := getDataStoreKey(ServiceCollectionName, id)
+func StoreServices(db *io.Configuration, id string, sl []Service) (err error) {
+	key := io.GetDataStoreKey(ServiceCollectionName, id)
 	_, err = db.DataStoreClient.Put(context.Background(), key, sl)
 	if err != nil {
 		logrus.Println(err)
@@ -35,7 +36,7 @@ const RouteCollectionName = model.RouteCollectionName
 
 type Route model.Route
 
-func ListAllRoutes(db *Configuration) (sl []Route, err error) {
+func ListAllRoutes(db *io.Configuration) (sl []Route, err error) {
 	ctx := context.Background()
 	sl = make([]Route, 0)
 	q := datastore.NewQuery(RouteCollectionName)
@@ -45,8 +46,8 @@ func ListAllRoutes(db *Configuration) (sl []Route, err error) {
 	}
 	return sl, nil
 }
-func StoreRoutes(db *Configuration, id string, sl []Route) (err error) {
-	key := getDataStoreKey(RouteCollectionName, id)
+func StoreRoutes(db *io.Configuration, id string, sl []Route) (err error) {
+	key := io.GetDataStoreKey(RouteCollectionName, id)
 	_, err = db.DataStoreClient.Put(context.Background(), key, sl)
 	if err != nil {
 		logrus.Println(err)

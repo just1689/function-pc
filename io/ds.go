@@ -14,7 +14,7 @@ type Configuration struct {
 	Once            sync.Once
 }
 
-func getDataStoreKey(collection, id string) *datastore.Key {
+func GetDataStoreKey(collection, id string) *datastore.Key {
 	return datastore.NameKey(collection, id, nil)
 }
 

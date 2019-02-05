@@ -1,7 +1,9 @@
 package F
 
 import (
+	"encoding/json"
 	"github.com/plancks-cloud/function-pc/io"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 )
@@ -53,6 +55,7 @@ func handleGet(collection string, w http.ResponseWriter) {
 			return
 		}
 		io.WriteObjectToJson(w, sl)
+		return
 	} else if collection == io.ServiceCollectionName {
 		sl, err := io.ListAllServices(config)
 		if err != nil {
@@ -60,17 +63,46 @@ func handleGet(collection string, w http.ResponseWriter) {
 			return
 		}
 		io.WriteObjectToJson(w, sl)
-	} else {
-		io.WriteError(w, http.StatusBadRequest, "Bad request: action must be get or set.")
 		return
 	}
+	io.WriteError(w, http.StatusBadRequest, "Bad request: action must be get or set.")
 
 }
 
-func handleSet(collection string, config io.Configuration, id string) {
+func handleSet(collection string, config *io.Configuration, id string, w http.ResponseWriter, r *http.Request) {
 	if collection == io.RouteCollectionName {
+		var routes []io.Route
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&routes)
+		if err != nil {
+			logrus.Error(err)
+			io.WriteError(w, http.StatusInternalServerError, "Could not decode routes")
+			return
+		}
+		err = io.StoreRoutes(config, id, routes)
+		if err != nil {
+			logrus.Error(err)
+			io.WriteError(w, http.StatusInternalServerError, "Could not store routes")
+			return
+		}
+		io.WriteObjectToJson(w, "")
+	} else if collection == io.ServiceCollectionName {
+		var sl []io.Service
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&sl)
+		if err != nil {
+			logrus.Error(err)
+			io.WriteError(w, http.StatusInternalServerError, "Could not decode services")
+			return
+		}
+		err = io.StoreServices(config, id, sl)
+		if err != nil {
+			logrus.Error(err)
+			io.WriteError(w, http.StatusInternalServerError, "Could not store services")
+			return
+		}
+		io.WriteObjectToJson(w, "")
 
-		io.StoreRoutes(config, id)
 	}
 }
 

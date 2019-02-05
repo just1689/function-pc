@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/plancks-cloud/plancks-cloud/model"
+	"github.com/sirupsen/logrus"
 )
 
 const ServiceCollectionName = model.ServiceCollectionName
@@ -21,12 +22,13 @@ func ListAllServices(db *Configuration) (sl []Service, err error) {
 	}
 	return sl, nil
 }
-func StoreServices(db *Configuration, id string, sl []Service) {
+func StoreServices(db *Configuration, id string, sl []Service) (err error) {
 	key := getDataStoreKey(ServiceCollectionName, id)
-	_, err := db.DataStoreClient.Put(context.Background(), key, sl)
+	_, err = db.DataStoreClient.Put(context.Background(), key, sl)
 	if err != nil {
-		fmt.Println(err)
+		logrus.Println(err)
 	}
+	return
 }
 
 const RouteCollectionName = model.RouteCollectionName
@@ -43,10 +45,11 @@ func ListAllRoutes(db *Configuration) (sl []Route, err error) {
 	}
 	return sl, nil
 }
-func StoreRoutes(db *Configuration, id string, sl []Route) {
+func StoreRoutes(db *Configuration, id string, sl []Route) (err error) {
 	key := getDataStoreKey(RouteCollectionName, id)
-	_, err := db.DataStoreClient.Put(context.Background(), key, sl)
+	_, err = db.DataStoreClient.Put(context.Background(), key, sl)
 	if err != nil {
-		fmt.Println(err)
+		logrus.Println(err)
 	}
+	return
 }

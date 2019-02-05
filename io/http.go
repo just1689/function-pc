@@ -1,7 +1,9 @@
 package io
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 )
@@ -23,4 +25,17 @@ func WriteError(w http.ResponseWriter, code int, msg string) {
 	w.Header().Add("Cache-Control", "no-cache")
 	w.Header().Add("ETag", "0")
 	WriteURLToWriter(msg, w)
+}
+
+func WriteObjectToJson(w http.ResponseWriter, object interface{}) (err error) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-type", "application/json")
+	w.Header().Add("Cache-Control", "no-cache")
+	b, err := json.Marshal(object)
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
+	_, err = w.Write(b)
+	return
 }

@@ -3,7 +3,8 @@ package io
 import (
 	"cloud.google.com/go/datastore"
 	"context"
-	"fmt"
+	"contrib.go.opencensus.io/exporter/stackdriver"
+	"go.opencensus.io/trace"
 	"sync"
 )
 
@@ -13,41 +14,26 @@ type Configuration struct {
 	Once            sync.Once
 }
 
-func (db *Configuration) ListAllServices() (sl []*Service, err error) {
-	ctx := context.Background()
-	sl = make([]*Service, 0)
-	q := datastore.NewQuery(ServiceCollectionName)
-	_, err = db.DataStoreClient.GetAll(ctx, q, &sl)
-	if err != nil {
-		return nil, fmt.Errorf("DataStore DB: could not list services: %v", err)
-	}
-	return sl, nil
+func getDataStoreKey(collection, id string) *datastore.Key {
+	return datastore.NameKey(collection, id, nil)
 }
 
-func (db *Configuration) ListAllRoutes() (sl []*Route, err error) {
-	ctx := context.Background()
-	sl = make([]*Route, 0)
-	q := datastore.NewQuery(RouteCollectionName)
-	_, err = db.DataStoreClient.GetAll(ctx, q, &sl)
-	if err != nil {
-		return nil, fmt.Errorf("DataStore DB: could not list routes: %v", err)
-	}
-	return sl, nil
-}
+func DefaultConfigFunc(projectId string, config *Configuration) {
 
-func (db *Configuration) StoreObjects(collection string, clones []*interface{}) {
-	keys := getDataStoreKeys(collection, clones)
-	_, err := config.DataStoreClient.PutMulti(context.Background(), keys, &clones)
+	stackdriverExporter, err := stackdriver.NewExporter(stackdriver.Options{ProjectID: projectId})
 	if err != nil {
-		fmt.Println(err)
+		config.Err = err
+		return
 	}
-}
 
-func getDataStoreKeys(project string, clones *io.Clones) (keys []*datastore.Key) {
-	keys = make([]*datastore.Key, len(clones.Days))
-	for _, c := range clones.Days {
-		key := datastore.NameKey(project, c.Timestamp, nil)
-		keys = append(keys, key)
+	trace.RegisterExporter(stackdriverExporter)
+	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+
+	client, err := datastore.NewClient(context.Background(), projectId)
+	if err != nil {
+		config.Err = err
+		return
 	}
-	return keys
+
+	config.DataStoreClient = client
 }

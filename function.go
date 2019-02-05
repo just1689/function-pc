@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	config     *io.Configuration
+	config     = &io.Configuration{}
 	configFunc = io.DefaultConfigFunc
 	projectId  = os.Getenv("GCP_PROJECT")
 )
@@ -32,7 +32,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config = &io.Configuration{}
 	config.Once.Do(func() { configFunc(projectId, config) })
 
 	authenticated := io.Auth(req.id, req.key)

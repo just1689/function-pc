@@ -44,7 +44,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	if req.action == "get" {
 		handleGet(req.collection, w)
 	} else if req.action == "set" {
-		handleSet(req, config, w)
+		handleSet(req, w)
 	} else {
 		io.WriteError(w, http.StatusBadRequest, "Bad request: action must be get or set.")
 		return
@@ -74,7 +74,7 @@ func handleGet(collection string, w http.ResponseWriter) {
 
 }
 
-func handleSet(req *requestDescription, config *io.Configuration, w http.ResponseWriter) {
+func handleSet(req *requestDescription, w http.ResponseWriter) {
 	if req.collection == domain.RouteCollectionName {
 		var routes []domain.Route
 		decoder := json.NewDecoder(req.body)

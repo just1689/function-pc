@@ -1,13 +1,52 @@
 package io
 
 import (
+	"cloud.google.com/go/datastore"
+	"context"
+	"fmt"
 	"github.com/plancks-cloud/plancks-cloud/model"
 )
 
 const ServiceCollectionName = model.ServiceCollectionName
 
-const RouteCollectionName = model.RouteCollectionName
-
 type Service model.Service
 
+func ListAllServices(db *Configuration) (sl []*Service, err error) {
+	ctx := context.Background()
+	sl = make([]*Service, 0)
+	q := datastore.NewQuery(ServiceCollectionName)
+	_, err = db.DataStoreClient.GetAll(ctx, q, &sl)
+	if err != nil {
+		return nil, fmt.Errorf("DataStore DB: could not list services: %v", err)
+	}
+	return sl, nil
+}
+func StoreServices(db *Configuration, id string, sl []*Service) {
+	keys := getDataStoreKeys(ServiceCollectionName, id)
+	_, err := db.DataStoreClient.PutMulti(context.Background(), keys, sl)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+const RouteCollectionName = model.RouteCollectionName
+
 type Route model.Route
+
+func ListAllRoutes(db *Configuration) (sl []*Route, err error) {
+	ctx := context.Background()
+	sl = make([]*Route, 0)
+	q := datastore.NewQuery(RouteCollectionName)
+	_, err = db.DataStoreClient.GetAll(ctx, q, &sl)
+	if err != nil {
+		return nil, fmt.Errorf("DataStore DB: could not list routes: %v", err)
+	}
+	return sl, nil
+}
+func StoreRoutes(db *Configuration, id string, sl []*Route) {
+	keys := getDataStoreKeys(RouteCollectionName, id)
+	_, err := db.DataStoreClient.PutMulti(context.Background(), keys, sl)
+	if err != nil {
+		fmt.Println(err)
+	}
+}

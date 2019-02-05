@@ -1,3 +1,3 @@
-Function Persist Content
+#Function Persist Content
 
-- Small function for mutating and accessing state of a cluster.
+Small function for mutating and accessing state of a cluster.

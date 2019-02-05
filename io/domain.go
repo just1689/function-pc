@@ -22,8 +22,8 @@ func ListAllServices(db *Configuration) (sl []*Service, err error) {
 	return sl, nil
 }
 func StoreServices(db *Configuration, id string, sl []*Service) {
-	keys := getDataStoreKeys(ServiceCollectionName, id)
-	_, err := db.DataStoreClient.PutMulti(context.Background(), keys, sl)
+	key := getDataStoreKey(ServiceCollectionName, id)
+	_, err := db.DataStoreClient.Put(context.Background(), key, sl)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -44,8 +44,8 @@ func ListAllRoutes(db *Configuration) (sl []*Route, err error) {
 	return sl, nil
 }
 func StoreRoutes(db *Configuration, id string, sl []*Route) {
-	keys := getDataStoreKeys(RouteCollectionName, id)
-	_, err := db.DataStoreClient.PutMulti(context.Background(), keys, sl)
+	key := getDataStoreKey(RouteCollectionName, id)
+	_, err := db.DataStoreClient.Put(context.Background(), key, sl)
 	if err != nil {
 		fmt.Println(err)
 	}

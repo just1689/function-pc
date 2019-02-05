@@ -1,0 +1,1 @@
+gcloud alpha functions deploy http --entry-point F --memory 128MB --region us-central1 --runtime go111 --trigger-http

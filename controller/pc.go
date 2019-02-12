@@ -21,7 +21,7 @@ func ListAllServices(db *io.Configuration) (sl []domain.Service, err error) {
 }
 func StoreServices(db *io.Configuration, id string, sl []domain.Service) (err error) {
 	key := io.GetDataStoreKey(domain.ServiceCollectionName, id)
-	_, err = db.DataStoreClient.Put(context.Background(), key, sl)
+	_, err = db.DataStoreClient.Put(context.Background(), key, &sl)
 	if err != nil {
 		logrus.Println(err)
 	}
@@ -40,7 +40,7 @@ func ListAllRoutes(db *io.Configuration) (sl []domain.Route, err error) {
 }
 func StoreRoutes(db *io.Configuration, id string, sl []domain.Route) (err error) {
 	key := io.GetDataStoreKey(domain.RouteCollectionName, id)
-	_, err = db.DataStoreClient.Put(context.Background(), key, sl)
+	_, err = db.DataStoreClient.Put(context.Background(), key, &sl)
 	if err != nil {
 		logrus.Println(err)
 	}

@@ -2,6 +2,7 @@ package F
 
 import (
 	"encoding/json"
+	"github.com/plancks-cloud/function-pc/controller"
 	"github.com/plancks-cloud/function-pc/domain"
 	"github.com/plancks-cloud/function-pc/io"
 	"github.com/sirupsen/logrus"
@@ -17,7 +18,7 @@ var (
 )
 
 type requestDescription struct {
-	action     string
+	method     string
 	collection string
 	id         string
 	key        string
@@ -28,7 +29,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	req := describeRequest(r)
 
-	if req.action == "" || req.collection == "" {
+	if req.method == "" || req.collection == "" {
 		io.WriteError(w, http.StatusBadRequest, "Bad request: action and collection required.")
 		return
 	}
@@ -41,9 +42,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.action == "get" {
+	if req.method == http.MethodGet {
 		handleGet(req.collection, w)
-	} else if req.action == "set" {
+	} else if req.method == http.MethodPost {
 		handleSet(req, w)
 	} else {
 		io.WriteError(w, http.StatusBadRequest, "Bad request: action must be get or set.")
@@ -54,7 +55,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 func handleGet(collection string, w http.ResponseWriter) {
 	if collection == domain.RouteCollectionName {
-		sl, err := domain.ListAllRoutes(config)
+		sl, err := controller.ListAllRoutes(config)
 		if err != nil {
 			io.WriteError(w, http.StatusInternalServerError, "Could not list all routes")
 			return
@@ -62,7 +63,7 @@ func handleGet(collection string, w http.ResponseWriter) {
 		io.WriteObjectToJson(w, sl)
 		return
 	} else if collection == domain.ServiceCollectionName {
-		sl, err := domain.ListAllServices(config)
+		sl, err := controller.ListAllServices(config)
 		if err != nil {
 			io.WriteError(w, http.StatusInternalServerError, "Could not list all services")
 			return
@@ -84,7 +85,7 @@ func handleSet(req *requestDescription, w http.ResponseWriter) {
 			io.WriteError(w, http.StatusInternalServerError, "Could not decode routes")
 			return
 		}
-		err = domain.StoreRoutes(config, req.id, routes)
+		err = controller.StoreRoutes(config, req.id, routes)
 		if err != nil {
 			logrus.Error(err)
 			io.WriteError(w, http.StatusInternalServerError, "Could not store routes")
@@ -100,7 +101,7 @@ func handleSet(req *requestDescription, w http.ResponseWriter) {
 			io.WriteError(w, http.StatusInternalServerError, "Could not decode services")
 			return
 		}
-		err = domain.StoreServices(config, req.id, sl)
+		err = controller.StoreServices(config, req.id, sl)
 		if err != nil {
 			logrus.Error(err)
 			io.WriteError(w, http.StatusInternalServerError, "Could not store services")
@@ -117,9 +118,10 @@ func init() {
 
 func describeRequest(r *http.Request) *requestDescription {
 	return &requestDescription{
+
 		id:         r.Header.Get("persist-id"),
 		key:        r.Header.Get("persist-key"),
-		action:     r.URL.Query().Get("action"),
+		method:     r.Method,
 		collection: r.URL.Query().Get("collection"),
 		body:       r.Body,
 	}

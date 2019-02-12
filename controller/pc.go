@@ -3,7 +3,9 @@ package controller
 import (
 	"cloud.google.com/go/datastore"
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/plancks-cloud/function-pc/domain"
 	"github.com/plancks-cloud/function-pc/io"
 	"github.com/sirupsen/logrus"
@@ -21,7 +23,17 @@ func ListAllServices(db *io.Configuration) (sl []domain.Service, err error) {
 }
 func StoreServices(db *io.Configuration, id string, sl []domain.Service) (err error) {
 	key := io.GetDataStoreKey(domain.ServiceCollectionName, id)
-	_, err = db.DataStoreClient.Put(context.Background(), key, &sl)
+
+	logrus.Infoln("Storing route: ", id)
+	logrus.Infoln("Storing routes: ", len(sl))
+
+	b, err := json.Marshal(sl)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+	j := string(b)
+	_, err = db.DataStoreClient.Put(context.Background(), key, &j)
 	if err != nil {
 		logrus.Println(err)
 	}
@@ -39,10 +51,17 @@ func ListAllRoutes(db *io.Configuration) (sl []domain.Route, err error) {
 	return sl, nil
 }
 func StoreRoutes(db *io.Configuration, id string, sl []domain.Route) (err error) {
+	if len(sl) == 0 {
+		err = errors.New("Routes is len of 0. Not going to store")
+		logrus.Error(err)
+		return
+	}
 	key := io.GetDataStoreKey(domain.RouteCollectionName, id)
 	_, err = db.DataStoreClient.Put(context.Background(), key, &sl)
 	if err != nil {
-		logrus.Println(err)
+		b, _ := json.Marshal(sl)
+		logrus.Error(err)
+		logrus.Error(string(b))
 	}
 	return
 }

@@ -47,6 +47,7 @@ github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxv
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/opencontainers/go-digest v1.0.0-rc1/go.mod h1:cMLVZDEM3+U2I4VmLI6N8jQYUd2OVphdqWwCJHrFt2s=
 github.com/openzipkin/zipkin-go v0.1.1/go.mod h1:NtoC/o8u3JlF1lSlyPNswIbeQH9bJTmOf0Erfk+hxe8=
+github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/plancks-cloud/plancks-cloud v0.0.0-20190125113015-0cfcfec348cd/go.mod h1:AVNH8O7qynTBTheRMp0sj5BRkX5mRgZ7Q7jAQrQ8iK0=
 github.com/plancks-cloud/plancks-cloud v0.0.0-20190205091905-ad5f1eaf7f06 h1:FkcOkg0ue6BO1A4dFL3yMjsXyavXMlhg6kwKl1KTtKQ=

@@ -7,6 +7,7 @@ require (
 	github.com/googleapis/gax-go v0.0.0-20170915024731-317e0006254c // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20180628210949-0892b62f0d9f // indirect
 	github.com/jtolds/gls v0.0.0-20170503224851-77f18212c9c7 // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/plancks-cloud/plancks-cloud v0.0.0-20190205091905-ad5f1eaf7f06
 	github.com/sirupsen/logrus v1.3.0
 	github.com/smartystreets/assertions v0.0.0-20180803164922-886ec427f6b9 // indirect
